@@ -9,10 +9,16 @@ const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 router.use(cookieParser());
 let expiry =1000*60*60;
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', `${process.env.FRONTEND_URL}}`);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 router.get('/',auth, (req, res) => {
-    res.cookie("loggedIn", req.loggedIn, { maxAge: expiry});
-    res.cookie("email", req.email, { maxAge: expiry});
+    res.cookie("loggedIn", req.loggedIn, { maxAge: expiry,sameSite: 'none',  secure: true });
+    res.cookie("email", req.email, { maxAge: expiry, sameSite: 'none',  secure: true});
     res.redirect(`${process.env.FRONTEND_URL}/`);
 });
 
@@ -84,7 +90,7 @@ router.post("/login",async(req,res)=>{
         const isMatch=await bcrypt.compare(password,useremail.password);
         if(isMatch){
             const token = await useremail.generateAuthToken();
-            res.cookie("jwt0", token, { maxAge: expiry});
+            res.cookie("jwt0", token, { maxAge: expiry,sameSite: 'none',  secure: true });
             // console.log("")
             console.log("Token generated while login: ", token);
             res.redirect("/");
