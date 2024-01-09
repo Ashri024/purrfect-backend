@@ -18,4 +18,6 @@ app.use(express.static('public', { maxAge: '1y' }));
 app.use(express.static(path.join(__dirname, "./public")));
 app.set("views", path.join(__dirname, "../templates/views"));
 app.set("view engine", "hbs");
-
+app.listen(port, () => {
+    console.log(`connection is setup at http://localhost:${port}`);
+})
