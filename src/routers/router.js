@@ -11,7 +11,7 @@ const crypto = require("crypto");
 router.use(cookieParser());
 let expiry =1000*60*60;
 app.use((req, res, next) => {
-    console.log("the cors url: ",process.env.FRONTEND_URL);
+    
   res.header('Access-Control-Allow-Origin', `${process.env.FRONTEND_URL}`);
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -19,6 +19,7 @@ app.use((req, res, next) => {
 });
 
 router.get('/',auth, (req, res) => {
+    console.log("the cors url: ",process.env.FRONTEND_URL);
     console.log("Auth ke baad: ",req.email);
     console.log("Auth ke baad: ",req.loggedIn);
     res.cookie("loggedIn", req.loggedIn, { maxAge: expiry,sameSite: 'none',  secure: true });
