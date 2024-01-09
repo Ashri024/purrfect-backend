@@ -11,6 +11,7 @@ const crypto = require("crypto");
 router.use(cookieParser());
 let expiry =1000*60*60;
 app.use((req, res, next) => {
+    console.log("the cors url: ",process.env.FRONTEND_URL);
   res.header('Access-Control-Allow-Origin', `${process.env.FRONTEND_URL}}`);
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
