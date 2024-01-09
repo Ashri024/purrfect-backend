@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact page</title>
+</head>
+<style>
+    //write css to style the form
+    body{
+        background-color: #f1f1f1;
+    }
+    h1{
+        text-align: center;
+        color: #333;
+    }
+    form{
+        width: 50%;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+    }
+    label{
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+    }
+    input{
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+    input[type="submit"]{
+        background-color: #333;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    input[type="submit"]:hover{
+        background-color: #555;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus{
+        outline: none;
+        border-color: #333;
+    }
+    .error{
+        color: red;
+        font-size: 14px;
+    }
+
+</style>
+<body>
+    <h1>Hello this is SignUp page</h1>
+    <form action="/signUp" method="post">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" placeholder="Enter your name">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" placeholder="Enter your email">
+        <label for="phone">Phone</label>
+        <input type="text" name="phone" id="phone" placeholder="Enter your phone number">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="Enter your password">
+        <label for="confirmPass">Confirm Password</label>
+        <input type="password" name="confirmPass" id="confirmPass" placeholder="Confirm your password">
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
