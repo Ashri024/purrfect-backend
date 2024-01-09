@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./src/app.js -e hbs,js,html "
+    "dev": "nodemon ./src/app.js -e hbs,js,html ",
+    "production": "node ./src/app.js"
   },
   "author": "",
   "license": "ISC",
