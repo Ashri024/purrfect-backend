@@ -19,6 +19,8 @@ app.use((req, res, next) => {
 });
 
 router.get('/',auth, (req, res) => {
+    console.log("Auth ke baad: ",req.email);
+    console.log("Auth ke baad: ",req.loggedIn);
     res.cookie("loggedIn", req.loggedIn, { maxAge: expiry,sameSite: 'none',  secure: true });
     res.cookie("email", req.email, { maxAge: expiry, sameSite: 'none',  secure: true});
     res.redirect(`${process.env.FRONTEND_URL}/`);
