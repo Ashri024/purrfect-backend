@@ -38,13 +38,6 @@ router.post("/login", async(req, res) => {
 
 });
 
-// router.post("/signUp", async(req, res) => {
-//     try{
-//     res.redirect(`${process.env.FRONTEND_URL}/`);
-// }catch(err){
-//     console.log("error redirecgiton: ",err);
-// }
-// });
 
 router.post('/signUp', async(req, res) => {
     console.log("sign Up page");
@@ -70,7 +63,8 @@ catch(err){
 }
 });
 
-router.get("/logout",auth,async(req,res)=>{
+//Zaruat nhi hai iski
+router.get("/logout",async(req,res)=>{
     try{
         console.log(req.cookies.jwt0)
         res.clearCookie("loggedIn");
@@ -88,19 +82,15 @@ router.get("/logout",auth,async(req,res)=>{
     
 });
 
-router.get("/logoutAll",auth,async(req,res)=>{
+router.get("/logoutAll",async(req,res)=>{
     try{
         //write the logoutAll functionality using crypto
         const newSecretKey = crypto.randomBytes(32).toString("hex");
         process.env.SECRET_KEY = newSecretKey;
         console.log("new Secret Key",newSecretKey);
 
-        res.clearCookie("loggedIn");
-        res.clearCookie("jwt0");
-        res.clearCookie("email");
         console.log("Logout successfully from all devices!!!");
-        // await req.user.save();
-        res.redirect(`${process.env.FRONTEND_URL}/`);
+        res.send({status:true});
         }
         catch(err){
             console.log("Error: ", err);
