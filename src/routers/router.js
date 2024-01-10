@@ -72,6 +72,7 @@ catch(err){
 
 router.get("/logout",auth,async(req,res)=>{
     try{
+        console.log(req.cookies.jwt0)
         res.clearCookie("loggedIn");
         res.clearCookie("jwt0");
         res.clearCookie("email");

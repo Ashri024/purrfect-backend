@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const auth= async(req,res,next)=>{
     try{
-        console.log("Auth Cookies:",req.cookies.jwt0);
+        console.log("Auth Cookies changed:",req.cookies.jwt0);
         const token= req.cookies.jwt0;
         jwt.verify(token,process.env.SECRET_KEY);
         next();
