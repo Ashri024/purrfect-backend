@@ -82,21 +82,5 @@ router.get("/logout",async(req,res)=>{
     
 });
 
-router.get("/logoutAll",async(req,res)=>{
-    try{
-        //write the logoutAll functionality using crypto
-        const newSecretKey = crypto.randomBytes(32).toString("hex");
-        process.env.SECRET_KEY = newSecretKey;
-        console.log("new Secret Key",newSecretKey);
-
-        console.log("Logout successfully from all devices!!!");
-        res.send({status:true});
-        }
-        catch(err){
-            console.log("Error: ", err);
-            res.send(err);
-        }
-});
-
 
 module.exports = router;    
