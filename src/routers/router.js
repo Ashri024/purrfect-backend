@@ -9,49 +9,45 @@ const auth = require("../authentication/auth");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 const cors = require("cors");
-// app.use(cors());
+router.use(cors());
+
 router.use(cookieParser());
 let expiry =1000*60*60;
 
-router.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL); // replace with your origin
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
+router.post("/login", async(req, res) => {
+    try {
+        const email = req.body.email;
+        const password = req.body.password.toString();
+        console.log("request body: ",req.body);
+        const useremail = await model.findOne({email: email});
+        console.log("user found: ",useremail);
 
-router.get('/',auth, (req, res) => {
-    console.log("the cors url: ",process.env.FRONTEND_URL);
-    console.log("the cors url: ",process.env.FRONTEND_URL);
-    console.log("Auth ke baad: ",req.email);
-    console.log("Auth ke baad: ",req.loggedIn);
-    res.cookie("email", req.email, { sameSite: 'None', secure: true });
-    res.cookie("loggedIn", req.loggedIn, { sameSite: 'None', secure: true });
-    res.redirect(`${process.env.FRONTEND_URL}/`);
-});
-
-router.post("/login",async(req,res)=>{
-    console.log("Hi u reached here");
-    try{
-        const email=req.body.email;
-        const password=req.body.password;
-        const useremail=await model.findOne({email:email});
-        const isMatch=await bcrypt.compare(password,useremail.password);
+        const isMatch = await bcrypt.compare(password, useremail.password);
         if(isMatch){
             const token = await useremail.generateAuthToken();
             console.log("Token generated while login: ", token);
-            res.cookie("jwt0", token, { sameSite: 'None', secure: true });
-            res.redirect("/");
+            //print the cookies 
+            res.json({email:useremail.email, loggedIn:isMatch, token});
+        }else{
+            res.status(404).json({error:"invalid password"});
         }
-        else{
-            res.status(400).json({error:"invalid login details"});
-        }
+    } catch (error) {
+        console.log(error)
+        res.status(404).send("email not found");
     }
-    catch(err){
-        res.status(400).send("invalid login details");
-    }
+
 });
+
+// router.post("/signUp", async(req, res) => {
+//     try{
+//     res.redirect(`${process.env.FRONTEND_URL}/`);
+// }catch(err){
+//     console.log("error redirecgiton: ",err);
+// }
+// });
+
 router.post('/signUp', async(req, res) => {
+    console.log("sign Up page");
     try{
         if(req.body.password != req.body.confirmPass){
             console.log("passwords are not matching");
@@ -66,7 +62,7 @@ router.post('/signUp', async(req, res) => {
         });
 
         await user.save();
-        res.redirect(`${process.env.BACKEND_URL}/login`);
+        res.json({status:true});
 }
 catch(err){
     console.log(err);
@@ -90,6 +86,7 @@ router.get("/logout",auth,async(req,res)=>{
         }
     
 });
+
 router.get("/logoutAll",auth,async(req,res)=>{
     try{
         //write the logoutAll functionality using crypto

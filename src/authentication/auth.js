@@ -3,17 +3,16 @@ const jwt = require('jsonwebtoken');
 
 const auth= async(req,res,next)=>{
     try{
-        console.log("Auth Cookies:",req.cookies);
+        console.log("Auth Cookies:",req.cookies.jwt0);
         const token= req.cookies.jwt0;
-        const verifyUser= jwt.verify(token,process.env.SECRET_KEY);
-        const user= await model.findOne({_id:verifyUser._id});
-        console.log("user mil gaya: ",user);
-        req.email=user.email;
-        req.loggedIn=true;
+        jwt.verify(token,process.env.SECRET_KEY);
         next();
     }
     catch(err){
         console.log(err);
+        res.clearCookie("jwt0");
+        res.clearCookie("loggedIn");
+        res.clearCookie("email");
         res.redirect(`${process.env.FRONTEND_URL}/login`);
     }
 }
