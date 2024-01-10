@@ -26,6 +26,7 @@ router.use((req, res, next) => {
 
 router.get('/',auth, (req, res) => {
     console.log("the cors url: ",process.env.FRONTEND_URL);
+    console.log("the cors url: ",process.env.FRONTEND_URL);
     console.log("Auth ke baad: ",req.email);
     console.log("Auth ke baad: ",req.loggedIn);
     res.cookie("email", req.email, { sameSite: 'None', secure: true });
