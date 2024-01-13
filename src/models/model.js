@@ -36,6 +36,26 @@ const schema= new mongoose.Schema({
         maxlength:10
     }
 });
+
+const weatherSchema= new mongoose.Schema({
+    weatherCode:{
+        type:[Number],
+        required:true
+    },
+    url:{
+        type:String,
+        required:true
+    },
+    dayIcon:{
+        type:String,
+        required:true
+    },
+    nightIcon:{
+        type:String,
+        required:true
+    }
+});
+
 let expiry = Math.floor(Date.now() / 1000) + (60 * 60);
 schema.methods.generateAuthToken= async function(){
     try{
@@ -54,5 +74,6 @@ schema.pre("save",async function(next){
     }
     next();
 })
+const Weather= new mongoose.model("WeatherImg",weatherSchema);
 const Register= new mongoose.model("Register",schema);
-module.exports= Register;
+module.exports={Register,Weather};
