@@ -92,25 +92,25 @@ function weatherDescriptionFunc(code) {
         3: "Overcast",
         45: "Fog and depositing rime fog",
         48: "Fog and depositing rime fog",
-        51: "Drizzle: Light intensity",
-        52: "Drizzle: Moderate intensity",
-        53: "Drizzle: Dense intensity",
-        56: "Freezing Drizzle: Light intensity",
-        57: "Freezing Drizzle: Dense intensity",
-        61: "Rain: Slight intensity",
-        63: "Rain: Moderate intensity",
-        65: "Rain: Heavy intensity",
-        66: "Freezing Rain: Light intensity",
-        67: "Freezing Rain: Heavy intensity",
-        71: "Snow fall: Slight intensity",
-        73: "Snow fall: Moderate intensity",
-        75: "Snow fall: Heavy intensity",
+        51: "Drizzle: Light",
+        52: "Drizzle: Moderate",
+        53: "Drizzle: Dense",
+        56: "Freezing Drizzle: Light",
+        57: "Freezing Drizzle: Dense",
+        61: "Rain: Slight",
+        63: "Rain: Moderate",
+        65: "Rain: Heavy",
+        66: "Freezing Rain: Light",
+        67: "Freezing Rain: Heavy",
+        71: "Snow fall: Slight",
+        73: "Snow fall: Moderate",
+        75: "Snow fall: Heavy",
         77: "Snow grains",
-        80: "Rain showers: Slight intensity",
-        81: "Rain showers: Moderate intensity",
-        82: "Rain showers: Heavy intensity",
-        85: "Snow showers: Slight intensity",
-        86: "Snow showers: Heavy intensity",
+        80: "Rain showers: Slight",
+        81: "Rain showers: Moderate",
+        82: "Rain showers: Heavy",
+        85: "Snow showers: Slight",
+        86: "Snow showers: Heavy",
         95: "Thunderstorm: Slight or moderate",
         96: "Thunderstorm with slight hail",
         99: "Thunderstorm with heavy hail",
@@ -126,8 +126,9 @@ router.get("/weather",async(req,res)=>{
     let currentWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,wind_speed_10m&hourly=temperature_2m,weather_code,visibility&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=1`;
 
     let airQuality=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&current=european_aqi`;
-    // let weatherCodeInterpreter=`https://gist.githubusercontent.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c/raw/76b0cb0ef0bfd8a2ec988aa54e30ecd1b483495d/descriptions.json`;
     
+    console.log("Current url", currentWeather);
+    console.log("Air quality url", airQuality);
     console.log("Fetching data");
     Promise.all([
         fetch(currentWeather).then(res => res.json()),
@@ -170,6 +171,76 @@ router.get("/weather",async(req,res)=>{
 
     // res.json({lat,lon});
 });
+router.get("/forecast",async(req,res)=>{
+    console.log("request parameters: ",req.query);
+    let forecast_days=req.query.forecast_days;
+    let lat= req.query.lat;
+    let lon= req.query.lon;
+    let sevenDaysWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=${forecast_days}`;
+    console.log("Data fetching for seven days...");
+    fetch(sevenDaysWeather).then(res => res.json())
+    .then(async(sevenDaysWeatherData)=>{
+
+        const dayArrayPromises = sevenDaysWeatherData.daily.time.map(async(dateString,i) => {
+            let dateObj;
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayNo = new Date(dateString).getDay();
+            let weather_code = sevenDaysWeatherData.daily.weather_code[i];
+            let weatherDescription =weatherDescriptionFunc(weather_code);
+            let temperature_max=sevenDaysWeatherData.daily.temperature_2m_max[i];
+            let temperature_min=sevenDaysWeatherData.daily.temperature_2m_min[i];
+            let weatherImgField =await Weather.findOne({weatherCode: { $in: weather_code } });
+            let weatherImg = weatherImgField.dayIcon;
+
+            dateObj = {
+                day: days[dayNo],
+                date: dateString,
+                weatherDescription:weatherDescription,
+                temperature_max:temperature_max,
+                temperature_min:temperature_min,
+                weatherIcon:weatherImg
+            };
+            // console.log(dateObj)
+            return dateObj;
+        })
+
+        const dayArray = await Promise.all(dayArrayPromises);
+        res.json({forecastArray:dayArray});
+    });
+});
+
+router.get("/hourlyForecast",async(req,res)=>{
+    // console.log(req.query);
+    let three_hour=[1,4,7,10,13,16,19,22];  
+    // let three_hour=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+    const labels=["1 AM","4 AM","7 AM","10 AM","1 PM","4 PM","7 PM","10 PM"];
+    // const labels = ["12 AM","1 AM","2 AM","3 AM","4 AM","5 AM","6 AM","7 AM","8 AM","9 AM","10 AM","11 AM","12 PM",
+    // "1 PM","2 PM","3 PM","4 PM","5 PM","6 PM","7 PM","8 PM","9 PM","10 PM","11 PM"];
+
+    let lat= req.query.lat;
+    let lon= req.query.lon;
+    let startDate=req.query.startDate;
+    let hourlyUrl= `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code&timezone=auto&start_date=${startDate}&end_date=${startDate}`
+    fetch(hourlyUrl).then(res => res.json())
+    .then(async(hourlyData)=>{
+        let hourObj=[];
+        for(let i=0;i<three_hour.length;i++){
+            let weatherCode=hourlyData.hourly.weather_code[three_hour[i]];
+
+            let weatherImgField =await Weather.findOne({weatherCode: { $in: weatherCode } });
+
+            let weatherIcon = weatherImgField.dayIcon;
+            hourObj.push({
+                weatherIcon:weatherIcon,
+                temperature:hourlyData.hourly.temperature_2m[three_hour[i]],
+                label:labels[i]
+            })
+        }
+        // console.log("hourly data: ", hourlyData);
+        res.json({hourObj:hourObj});
+    });
+});
+
 router.post("/login", async(req, res) => {
     try {
         const email = req.body.email;
