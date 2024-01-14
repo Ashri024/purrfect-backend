@@ -119,6 +119,8 @@ function weatherDescriptionFunc(code) {
 }
 
 router.get("/weather",async(req,res)=>{
+    try {
+        
     let lat= req.query.lat;
     let lon= req.query.lon;
     console.log("Backend Lat: ", lat);
@@ -162,8 +164,9 @@ router.get("/weather",async(req,res)=>{
                 }
             });
     });
-
-    // res.json({lat,lon});
+} catch (error) {
+        res.status(404).json({error:"Something went wrong"});
+}
 });
 router.get("/forecast",async(req,res)=>{
     let forecast_days=req.query.forecast_days;
