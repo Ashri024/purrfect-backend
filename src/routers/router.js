@@ -19,49 +19,57 @@ router.post("/weatherImg",async(req,res)=>{
         let obj=[
             {
               "weatherCode":[0],
-              "url": "https://f005.backblazeb2.com/file/WeatherApp/brightDay.jpg",
+              "url": "https://f005.backblazeb2.com/file/WeatherApp/clear.jpg",
+              "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/clearNight.jpg",
               "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/clear.svg",
               "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/clear.svg"
             },
              {
               "weatherCode":[1,2,3],
               "url": "https://f005.backblazeb2.com/file/WeatherApp/cloudy.png",
+              "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/cloudyNight.png",
                 "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/cloudy.svg",
                 "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/cloudy.svg"
             },
             {
               "weatherCode":[45,48],
               "url": "https://f005.backblazeb2.com/file/WeatherApp/fog.png",
+              "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/fogNight.jpg",
                 "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/fog.svg",
                 "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/fog.svg"
             },
             {
               "weatherCode":[51,53,55],
               "url": "https://f005.backblazeb2.com/file/WeatherApp/drizzle.png",
+              "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/drizzleNight.jpg",
                 "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/drizzle.svg",
                 "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/drizzle.svg"
             },
             {
               "weatherCode":[56,57,66,67],
               "url": "https://f005.backblazeb2.com/file/WeatherApp/freezingRain.png",
+              "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/freezingRainNight.png",
                 "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/freezingRain.svg",
                 "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/freezingRain.svg"
             },
             {
               "weatherCode":[61,63,65,80,81,82],
               "url": "https://f005.backblazeb2.com/file/WeatherApp/rain.png",
+              "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/rainNight.png",
                 "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/rain.svg",
                 "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/rain.svg"
             },
             {
               "weatherCode":[71,73,75,77,85,86],
-              "url": "https://f005.backblazeb2.com/file/WeatherApp/snowy.jpg",
+              "url": "https://f005.backblazeb2.com/file/WeatherApp/snow.jpg",
+                "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/snowNight.png",
                 "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/snow.svg",
                 "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/snow.svg"
             },
             {
               "weatherCode":[95,96,99],
-              "url": "https://f005.backblazeb2.com/file/WeatherApp/thunder2.png",
+              "url": "https://f005.backblazeb2.com/file/WeatherApp/thunder.png",
+                "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/thunderNight.png",
                 "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/thunder.svg",
                 "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/thunder.svg"
             }
@@ -71,6 +79,7 @@ router.post("/weatherImg",async(req,res)=>{
         const weather = new Weather({
             weatherCode:req.body[i].weatherCode,
             url:req.body[i].url,
+            nighturl:req.body[i].nighturl,
             dayIcon:req.body[i].dayIcon,
             nightIcon:req.body[i].nightIcon
         });
@@ -152,7 +161,7 @@ router.get("/weather",async(req,res)=>{
                 }else{
 
                     weatherImg={
-                        url:weatherImg.url,
+                        url:weatherImg.nighturl,
                         icon:weatherImg.nightIcon
                     }
                     weatherDescription= {

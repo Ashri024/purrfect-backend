@@ -90,6 +90,10 @@ const weatherSchema= new mongoose.Schema({
         type:String,
         required:true
     },
+    nighturl:{
+        type:String,
+        required:true
+    },
     dayIcon:{
         type:String,
         required:true
