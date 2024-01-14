@@ -344,7 +344,7 @@ router.get("/getCities", async (req, res) => {
         let userEmail = req.query.email;
         const user = await model.findOne({ email: userEmail });
         let searchHistory = user.searchHistory;
-
+        
         res.json({ status: true, searchHistory });
     } catch (err) {
         console.log("err: ", err);
