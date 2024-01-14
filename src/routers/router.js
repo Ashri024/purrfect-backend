@@ -121,6 +121,8 @@ function weatherDescriptionFunc(code) {
 router.get("/weather",async(req,res)=>{
     let lat= req.query.lat;
     let lon= req.query.lon;
+    console.log("Backend Lat: ", lat);
+    console.log("Backend Lon: ", lon);
     let currentWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,wind_speed_10m&hourly=temperature_2m,weather_code,visibility&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=1`;
 
     let airQuality=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&current=european_aqi`;
