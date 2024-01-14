@@ -172,10 +172,11 @@ router.get("/forecast",async(req,res)=>{
     let forecast_days=req.query.forecast_days;
     let lat= req.query.lat;
     let lon= req.query.lon;
-    let sevenDaysWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=${forecast_days}`;
+    
+    let sevenDaysWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=14`;
     fetch(sevenDaysWeather).then(res => res.json())
     .then(async(sevenDaysWeatherData)=>{
-
+        console.log("Data fetched for forecast: ",sevenDaysWeatherData);
         const dayArrayPromises = sevenDaysWeatherData.daily.time.map(async(dateString,i) => {
             let dateObj;
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
