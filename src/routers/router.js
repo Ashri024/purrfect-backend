@@ -79,7 +79,6 @@ router.post("/weatherImg",async(req,res)=>{
         res.json({status:true});
     }
     catch(err){
-        console.log(err);
         res.status(400).send(err);
     }
 });
@@ -120,25 +119,18 @@ function weatherDescriptionFunc(code) {
 }
 
 router.get("/weather",async(req,res)=>{
-    console.log("request parameters: ",req.query);
     let lat= req.query.lat;
     let lon= req.query.lon;
     let currentWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,wind_speed_10m&hourly=temperature_2m,weather_code,visibility&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=1`;
 
     let airQuality=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&current=european_aqi`;
     
-    console.log("Current url", currentWeather);
-    console.log("Air quality url", airQuality);
-    console.log("Fetching data");
     Promise.all([
         fetch(currentWeather).then(res => res.json()),
         fetch(airQuality).then(res => res.json())
         ]).then(async([WeatherData, AirQuality]) => {
-        console.log("current weather: ", WeatherData);
-        console.log("air quality: ", AirQuality);
         let weather_code = WeatherData.current.weather_code;
         let is_day = WeatherData.current.is_day;
-        console.log("weather code: ", weather_code);
         // let weatherImg = await Weather.findOne({weatherCode: { $in: weather_code } });
         
             Weather.findOne({weatherCode: { $in: weather_code } }).then((weatherImg)=>{
@@ -172,12 +164,10 @@ router.get("/weather",async(req,res)=>{
     // res.json({lat,lon});
 });
 router.get("/forecast",async(req,res)=>{
-    console.log("request parameters: ",req.query);
     let forecast_days=req.query.forecast_days;
     let lat= req.query.lat;
     let lon= req.query.lon;
     let sevenDaysWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=${forecast_days}`;
-    console.log("Data fetching for seven days...");
     fetch(sevenDaysWeather).then(res => res.json())
     .then(async(sevenDaysWeatherData)=>{
 
@@ -200,7 +190,6 @@ router.get("/forecast",async(req,res)=>{
                 temperature_min:temperature_min,
                 weatherIcon:weatherImg
             };
-            // console.log(dateObj)
             return dateObj;
         })
 
@@ -210,7 +199,6 @@ router.get("/forecast",async(req,res)=>{
 });
 
 router.get("/hourlyForecast",async(req,res)=>{
-    // console.log(req.query);
     let three_hour=[1,4,7,10,13,16,19,22];  
     // let three_hour=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
     const labels=["1 AM","4 AM","7 AM","10 AM","1 PM","4 PM","7 PM","10 PM"];
@@ -236,7 +224,6 @@ router.get("/hourlyForecast",async(req,res)=>{
                 label:labels[i]
             })
         }
-        // console.log("hourly data: ", hourlyData);
         res.json({hourObj:hourObj});
     });
 });
@@ -245,32 +232,26 @@ router.post("/login", async(req, res) => {
     try {
         const email = req.body.email;
         const password = req.body.password.toString();
-        console.log("request body: ",req.body);
         const useremail = await model.findOne({email: email});
-        console.log("user found: ",useremail);
 
         const isMatch = await bcrypt.compare(password, useremail.password);
         if(isMatch){
             const token = await useremail.generateAuthToken();
-            console.log("Token generated while login: ", token);
             //print the cookies 
             res.json({email:useremail.email, loggedIn:isMatch, token});
         }else{
             res.status(404).json({error:"invalid password"});
         }
     } catch (error) {
-        console.log(error)
         res.status(404).send("email not found");
     }
 
 });
 
 router.post('/signUp', async(req, res) => {
-    console.log("sign Up page");
     try{
         
         if(req.body.password != req.body.confirmPass){
-            console.log("passwords are not matching");
             return res.status(400).json({error:"Passwords are not matching"});
         }
         const user = new model({
@@ -285,7 +266,6 @@ router.post('/signUp', async(req, res) => {
         res.json({status:true});
 }
 catch(err){
-    console.log(err);
     res.status(400).send(err);
 }
 });
@@ -293,17 +273,14 @@ catch(err){
 //Zaruat nhi hai iski
 router.get("/logout",async(req,res)=>{
     try{
-        console.log(req.cookies.jwt0)
         res.clearCookie("loggedIn");
         res.clearCookie("jwt0");
         res.clearCookie("email");
-        console.log("Logout successfully!!!");
         // await req.user.save();
 
         res.redirect(`${process.env.FRONTEND_URL}/`);
         }
         catch(err){
-            console.log("Error: ", err);
             res.send(err);
         }
     
