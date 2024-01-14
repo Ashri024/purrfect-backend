@@ -249,7 +249,7 @@ router.post("/login", async(req, res) => {
             res.status(404).json({error:"invalid password"});
         }
     } catch (error) {
-        res.status(404).send("email not found");
+        res.status(404).json({error:"email not found"});
     }
 
 });
