@@ -3,6 +3,49 @@ const validator= require("validator");
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 
+
+const cityHistorySchema = new mongoose.Schema({
+    location:{
+        type:String,
+        required:true
+    },
+    lat:{
+        type:Number,
+        required:true
+    },
+    lon:{
+        type:Number,
+        required:true
+    },
+    current_temp:{
+        type:Number,
+        required:true
+    },
+    min:{
+        type:Number,
+        required:true
+    },
+    max:{
+        type:Number,
+        required:true
+    },
+    precipitation:{
+        type:Number,
+        required:true, 
+    },
+    humidity:{
+        type:Number,
+        required:true
+    },
+    icon:{
+        type:String,
+        required:true
+    },
+    date:{
+        type:String,
+        required:true
+    }
+});
 const schema= new mongoose.Schema({ 
     name:{
         type:String,
@@ -34,7 +77,8 @@ const schema= new mongoose.Schema({
         unique:true,
         minlength:10,
         maxlength:10
-    }
+    },
+    searchHistory:[cityHistorySchema]
 });
 
 const weatherSchema= new mongoose.Schema({
@@ -56,6 +100,7 @@ const weatherSchema= new mongoose.Schema({
     }
 });
 
+
 let expiry = Math.floor(Date.now() / 1000) + (60 * 60);
 schema.methods.generateAuthToken= async function(){
     try{
@@ -74,6 +119,8 @@ schema.pre("save",async function(next){
     }
     next();
 })
+
+// const CityHistory = new mongoose.model("CityHistory",cityHistorySchema);
 const Weather= new mongoose.model("WeatherImg",weatherSchema);
 const Register= new mongoose.model("Register",schema);
 module.exports={Register,Weather};

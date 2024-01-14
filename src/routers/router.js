@@ -176,7 +176,7 @@ router.get("/forecast",async(req,res)=>{
     let sevenDaysWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=14`;
     fetch(sevenDaysWeather).then(res => res.json())
     .then(async(sevenDaysWeatherData)=>{
-        console.log("Data fetched for forecast: ",sevenDaysWeatherData);
+        // console.log("Data fetched for forecast: ",sevenDaysWeatherData);
         const dayArrayPromises = sevenDaysWeatherData.daily.time.map(async(dateString,i) => {
             let dateObj;
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -292,6 +292,56 @@ router.get("/logout",async(req,res)=>{
     
 });
 
+router.post("/addCity", async (req, res) => {
+    try {
+        console.log("Adding City to db...");
+        let userEmail = req.body.email;
+        // Create a new city history entry
+        const cityHistory = {
+            location: req.body.location,
+            lat: req.body.lat,
+            lon: req.body.lon,
+            current_temp: req.body.current_temp,
+            min: req.body.min,
+            max: req.body.max,
+            humidity: req.body.humidity,
+            icon: req.body.icon,
+            date: req.body.date,
+            precipitation: req.body.precipitation
+        };
+
+        // Find the user by email and update their search history
+        const updatedUser = await model.findOneAndUpdate(
+            { email: userEmail },
+            { $push: { 
+                searchHistory: { 
+                $each: [cityHistory], 
+                $slice: -20 
+                }
+            } },
+            { new: true }
+        );
+
+        res.json({ status: true, updatedUser });
+    } catch (err) {
+        console.log("err: ", err);
+        res.status(500).json({ error: err, status: false });
+    }
+});
+
+router.get("/getCities", async (req, res) => {
+    try {
+        console.log("Getting City from db...");
+        let userEmail = req.query.email;
+        const user = await model.findOne({ email: userEmail });
+        let searchHistory = user.searchHistory;
+
+        res.json({ status: true, searchHistory });
+    } catch (err) {
+        console.log("err: ", err);
+        res.status(500).json({ error: err, status: false });
+    }
+});
 
 router.get("/mega",(req,res)=>{
     res.render("mega");
