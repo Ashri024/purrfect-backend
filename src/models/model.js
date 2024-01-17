@@ -71,12 +71,13 @@ const schema= new mongoose.Schema({
         required:true,
         minlength:8
     },
-    phone:{
-        type:Number,
-        required:true,
-        unique:true,
-        minlength:10,
-        maxlength:10
+    phone: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: [10, 'Phone number is shorter than the expected length (10).'],
+        maxlength: [10, 'Phone number is longer than the maximum allowed length (10).'],
+        match: [/^[0-9]+$/, 'Phone number should only contain numeric characters.']
     },
     searchHistory:[cityHistorySchema]
 });

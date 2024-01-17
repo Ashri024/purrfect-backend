@@ -22,7 +22,7 @@ router.post("/weatherImg",async(req,res)=>{
               "url": "https://f005.backblazeb2.com/file/WeatherApp/clear.jpg",
               "nighturl":"https://f005.backblazeb2.com/file/WeatherApp/clearNight.jpg",
               "dayIcon":"https://f005.backblazeb2.com/file/WeatherApp/DayIcons/clear.svg",
-              "nightIcon":"https://f005.backblazeb2.com/file/WeatherApp/NightIcons/clear.svg"
+              "nightIcon":"https://assets.dryicons.com/uploads/icon/svg/10303/32dc9e08-9167-4792-b7a1-119df97022e4.svg"
             },
              {
               "weatherCode":[1,2,3],
@@ -91,7 +91,14 @@ router.post("/weatherImg",async(req,res)=>{
         res.status(400).send(err);
     }
 });
-
+router.delete("/weatherImg",async(req,res)=>{
+    try{
+        await Weather.deleteMany({});
+        res.json({status:true});
+    }catch(err){
+        res.status(404);
+    }
+})
 function weatherDescriptionFunc(code) {
     const descriptions = {
         0: "Clear sky",
@@ -255,10 +262,10 @@ router.post("/login", async(req, res) => {
             //print the cookies 
             res.json({email:useremail.email, loggedIn:isMatch, token});
         }else{
-            res.status(404).json({error:"invalid password"});
+            res.status(404);
         }
     } catch (error) {
-        res.status(404).json({error:"email not found"});
+        res.status(404);
     }
 
 });
@@ -281,7 +288,7 @@ router.post('/signUp', async(req, res) => {
         res.json({status:true});
 }
 catch(err){
-    res.status(400).send(err);
+    res.status(400).json({error:err.message});
 }
 });
 
@@ -305,9 +312,11 @@ router.post("/addCity", async (req, res) => {
     try {
         console.log("Adding City to db...");
         let userEmail = req.body.email;
+        let cityLocation = req.body.location;
+
         // Create a new city history entry
         const cityHistory = {
-            location: req.body.location,
+            location: cityLocation,
             lat: req.body.lat,
             lon: req.body.lon,
             current_temp: req.body.current_temp,
@@ -319,7 +328,14 @@ router.post("/addCity", async (req, res) => {
             precipitation: req.body.precipitation
         };
 
-        // Find the user by email and update their search history
+        // Find the user by email and remove any existing history of the city from their search history
+        await model.findOneAndUpdate(
+            { email: userEmail },
+            { $pull: { searchHistory: { location: cityLocation } } },
+            { new: true }
+        );
+
+        // Find the user by email again and add the new city history to their search history
         const updatedUser = await model.findOneAndUpdate(
             { email: userEmail },
             { $push: { 
@@ -327,6 +343,27 @@ router.post("/addCity", async (req, res) => {
                 $each: [cityHistory], 
                 $slice: -20 
                 }
+            } },
+            { new: true }
+        );
+
+        res.json({ status: true, updatedUser });
+    } catch (err) {
+        console.log("err: ", err);
+        res.status(500).json({ error: err, status: false });
+    }
+});
+
+router.get("/deleteCity", async (req, res) => {
+    try {
+        console.log("Deleting City from db...");
+        let userEmail = req.query.email;2
+        // Find the user by email and update their search history
+        console.log(userEmail);
+        const updatedUser = await model.findOneAndUpdate(
+            { email: userEmail },
+            { $set: { 
+                searchHistory: []
             } },
             { new: true }
         );
