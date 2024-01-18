@@ -279,20 +279,23 @@ router.post("/login", async(req, res) => {
         const password = req.body.password.toString();
         const useremail = await model.findOne({email: email});
 
+        if (!useremail) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+
         const isMatch = await bcrypt.compare(password, useremail.password);
         if(isMatch){
             const token = await useremail.generateAuthToken();
             //print the cookies 
             res.json({email:useremail.email, loggedIn:isMatch, token});
         }else{
-            res.status(404);
+            res.status(400).json({ error: 'Invalid password' });
         }
     } catch (error) {
-        res.status(404);
+        res.status(500).json({ error: 'Server error' });
     }
-
 });
-
 router.post('/signUp', async(req, res) => {
     try{
         
