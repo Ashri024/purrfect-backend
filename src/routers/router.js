@@ -162,6 +162,10 @@ router.get("/weather",async(req,res)=>{
         
     let lat= req.query.lat;
     let lon= req.query.lon;
+    if (!lat || !lon) {
+        return res.status(400).json({ error: 'Latitude and longitude are required parameters' });
+    }
+    
     console.log("Backend Lat: ", lat);
     console.log("Backend Lon: ", lon);
     let currentWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,wind_speed_10m&hourly=temperature_2m,weather_code,visibility&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=1`;
@@ -323,7 +327,6 @@ catch(err){
 }
 });
 
-//Zaruat nhi hai iski
 router.get("/logout",async(req,res)=>{
     try{
         res.clearCookie("loggedIn");
