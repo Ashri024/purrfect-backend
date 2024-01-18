@@ -9,11 +9,34 @@ const auth = require("../authentication/auth");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 const cors = require("cors");
+const sgMail = require('@sendgrid/mail');
+
 router.use(cors());
 
 router.use(cookieParser());
 let expiry =1000*60*60;
 
+router.post("/sendEmail", async (req, res) => {
+    try{
+let email = req.body.email;
+let otp = Math.floor(100000 + Math.random() * 900000);
+sgMail.setApiKey('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');
+
+const msg = {
+  to: email,
+  from: 'purrfectweatherapp@gmail.com',
+  subject: 'Weather App Authentication',
+  text: `Otp for authentication`,
+  html: `OTP for authentication is : <strong>${otp}</strong>`,
+};
+
+sgMail.send(msg);
+res.json({otp:otp, status:true});
+}catch(err){
+    console.log("Error while sending emial, ",err);
+    res.status(400).json({error:err.message});
+}
+})
 router.post("/weatherImg",async(req,res)=>{
     try{
         let obj=[
@@ -392,4 +415,5 @@ router.get("/getCities", async (req, res) => {
 router.get("/mega",(req,res)=>{
     res.render("mega");
 })
+
 module.exports = router;    

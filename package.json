@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.0",
     "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
@@ -20,6 +21,7 @@
     "hbs": "^4.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
+    "nodemailer": "^6.9.8",
     "validator": "^13.11.0"
   }
 }
