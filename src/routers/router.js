@@ -169,12 +169,14 @@ router.get("/weather",async(req,res)=>{
     let airQuality=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&current=european_aqi`;
     
     Promise.all([
-        fetch(currentWeather).then(res => res.json()),
-        fetch(airQuality).then(res => res.json())
+        fetch(currentWeather).then(res => res.json()).catch(err=>console.log(err)),
+        fetch(airQuality).then(res => res.json()).catch(err=>console.log(err))
         ]).then(async([WeatherData, AirQuality]) => {
+        if(WeatherData.error || AirQuality.error){
+            res.status(404).json({error:"Something went wrong while fetching api"});
+        }else{
         let weather_code = WeatherData.current.weather_code;
         let is_day = WeatherData.current.is_day;
-        // let weatherImg = await Weather.findOne({weatherCode: { $in: weather_code } });
         
             Weather.findOne({weatherCode: { $in: weather_code } }).then((weatherImg)=>{
                 let weatherDescription =weatherDescriptionFunc(weather_code);
@@ -201,8 +203,11 @@ router.get("/weather",async(req,res)=>{
                     
                     res.json({WeatherData, AirQuality, weatherImg,weatherDescription});
                 }
+            
             });
-    });
+        }
+    })
+    
 } catch (error) {
         res.status(404).json({error:"Something went wrong"});
 }
