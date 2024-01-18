@@ -20,7 +20,7 @@ router.post("/sendEmail", async (req, res) => {
     try{
 let email = req.body.email;
 let otp = Math.floor(100000 + Math.random() * 900000);
-sgMail.setApiKey('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');
+sgMail.setApiKey(`${process.env.SENDGRID_API_KEY}`);
 
 const msg = {
   to: email,
