@@ -171,10 +171,16 @@ router.get("/weather",async(req,res)=>{
     let currentWeather=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,wind_speed_10m&hourly=temperature_2m,weather_code,visibility&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=1`;
 
     let airQuality=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&current=european_aqi`;
-    
+    const options = { timeout: 10000 };
     Promise.all([
-        fetch(currentWeather).then(res => res.json()).catch(err=>console.log(err)),
-        fetch(airQuality).then(res => res.json()).catch(err=>console.log(err))
+        fetch(currentWeather, options).then(res => res.json()).catch(err=>{
+        console.log("Error while fetching 177: ",err);
+        throw err;
+    } ),
+        fetch(airQuality, options).then(res => res.json()).catch(err=>{
+            console.log("Error while fetching at 181: ",err)
+        throw err;
+    })
         ]).then(async([WeatherData, AirQuality]) => {
         if(WeatherData.error || AirQuality.error){
             res.status(404).json({error:"Something went wrong while fetching api"});
